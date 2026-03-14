@@ -37,6 +37,7 @@ def extraerNombre():
 
 
 def renombrar(final_nombre):
+    global barra_principal
     # Leer las reglas de renombrado del txt
     reemplazos = {}
     with open(nuevo_txt, 'r', encoding='utf-8') as f:
@@ -53,7 +54,7 @@ def renombrar(final_nombre):
         ruta_archivo = os.path.join(carpeta, archivo)
         if os.path.isfile(ruta_archivo):
             nombre_sin_ext, ext = os.path.splitext(archivo)
-            barra = ""
+            barra = barra_principal
             partes = nombre_sin_ext.split("_")
             tam = len(partes)
             nombre_sin_barra = ""
@@ -63,7 +64,7 @@ def renombrar(final_nombre):
             else:
                 if tam == 2:
                     nombre_sin_barra = partes[0]
-                    barra = "_" + partes[1]
+                    barra = "_" + partes[1] + barra
                 else:
                     print(nombre_sin_ext)
 
@@ -80,12 +81,16 @@ def renombrar(final_nombre):
 
 
 # Rutas
-carpeta = r'C:\Users\Walter Rivas\Documents\Pokemon Base Sky\Graphics\Characters\Followers shiny\Female'
-ruta_txt = r'D:\PycharmProjects\MyAnimeList\Projects\IndexPokemon.txt'
+carpeta = r'C:\Users\Walter Rivas\Documents\Imagenes\Pokemon\Followers shiny'
+ruta_txt = r'D:\PycharmProjects\Pokemon\Pokedex\IndexPokemon.txt'
 ruta_PBS = r'C:\Users\Walter Rivas\Documents\Pokemon Base Sky\LA BASE DE SKY\PBS\pokemon.txt'
-nuevo_txt = r'D:\PycharmProjects\MyAnimeList\Projects\NamePokemon.txt'
+nuevo_txt = r'D:\PycharmProjects\Pokemon\Pokedex\NamePokemon.txt'
+#barra_principal = "_female"
+barra_principal = ""
 final_nombre_main = True
+# True --> De Numero a Nombre
+# False --> De Nombre a Numero
 
 # extraerNombre()
-#renombrar(final_nombre_main)
-resize_images(r"C:\Users\Walter Rivas\Documents\Pokemon Sky 3\Graphics\Pokemon\Back Shiny", r"C:\Users\Walter Rivas\Downloads\Back Shiny")
+renombrar(final_nombre_main)
+#resize_images(r"C:\Users\Walter Rivas\Documents\Pokemon Sky 3\Graphics\Pokemon\Back Shiny", r"C:\Users\Walter Rivas\Downloads\Back Shiny")
