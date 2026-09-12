@@ -22,13 +22,8 @@ def listaPokemon():
     soup = BeautifulSoup(page.content, 'html.parser')
     tables = soup.find_all("table", class_=re.compile("^roundy"))
     for table in tables:
-        trs = table.find_all('tr')
-        first = True
+        trs = table.find_all('tr')[1:]
         for tr in trs:
-            if first:
-                first = not first
-                continue
-
             tds = tr.find_all('td')
             number = tds[0].text.replace("#", "")
 
@@ -94,8 +89,13 @@ def listaPokemonForms():
         if nameFullPokemon == "Arceus":
             namePokemon = namePokemon + div.find_all("div")[1].text.rstrip().lstrip()
 
-        url_Image = (div.find_all('img'))[0]['src']
-        url_Image = url_Image.replace("thumb/", "").rsplit("/", 1)[0]
+        try:
+            url_Image = (div.find_all('img'))[0]['src']
+            url_Image = url_Image.replace("thumb/", "").rsplit("/", 1)[0]
+        except Exception as e:
+            print(namePokemon)
+            print("Error: " + str(e))
+            continue
 
         nameFile = "../Pokemon/Bulbapedia/Pokedex Diferentes Formas/" + namePokemon + ".png"
         if not os.path.exists(nameFile):
@@ -107,38 +107,35 @@ def listaPokemonRegional():
     url = base + '/wiki/Regional_form'
     page = urllink(url)
     soup = BeautifulSoup(page.content, 'html.parser')
-    tables = soup.find_all("table", class_=re.compile("^roundy"))
+    tables = soup.find_all("table", class_=re.compile("^roundy"))[:-1]
     number = 0
     namePokemon = ""
     form = ""
+    form_new = ""
     for table in tables:
-        trs = table.find_all('tr')[:-1]
-        first = True
+        trs = table.find_all('tr')[1:-1]
         for tr in trs:
-            if first:
-                first = not first
-                continue
-
             tds = tr.find_all('td')
             ths = tr.find_all('th')
             cantTds = len(tds)
             cantThs = len(ths)
 
-            if cantTds > 4:
+            if cantTds > 2:
                 number = formatText(tds[0].text.replace("#", ""))
                 namePokemon = formatText(tds[1].text)
-                url_Image = (tds[3].find_all('img'))[0]['src']
-                cantA = len(tds[3].find_all('a', recursive=False))
-                if cantA == 1:
-                    namePokemon = namePokemon + "-" + formatText((tds[3].find_all('a'))[1].text)
+                url_Image = (tds[cantTds - 1].find_all('img'))[0]['src']
+                listA = tds[cantTds - 1].find_all('a', recursive=False)
+                form_new = ""
+                if len(listA) == 1:
+                    form_new = "-" + formatText(listA[0].text)
             else:
-                plusnumber = 0
-                if cantTds == 4:
-                    plusnumber = 1
-                cantA = len(tds[plusnumber].find_all('a', recursive=False))
-                if cantA == 1:
-                    namePokemon = namePokemon + "-" + formatText((tds[0].find_all('a'))[1].text)
-                url_Image = (tds[plusnumber].find_all('img'))[0]['src']
+                # plusnumber = 0
+                # if cantTds == 4:
+                #     plusnumber = 1
+                # cantA = len(tds[plusnumber].find_all('a', recursive=False))
+                if cantThs == 0:
+                    form_new = "-" + formatText((tds[0].find_all('a'))[1].text)
+                url_Image = (tds[cantTds - 1].find_all('img'))[0]['src']
 
             if cantThs > 0:
                 form = (ths[0].find_all('a'))[1].text
@@ -147,7 +144,7 @@ def listaPokemonRegional():
             url_Image = url_Image.replace("thumb/", "").rsplit("/", 1)[0]
 
             nameFile = "../Pokemon/Bulbapedia/Pokedex Formas Regionales/" + str(
-                number) + "-" + namePokemon + "-" + form + ".png"
+                number) + "-" + namePokemon + form_new +"-" + form + ".png"
             if not os.path.exists(nameFile):
                 downloadImage(nameFile, url_Image)
 
@@ -193,7 +190,7 @@ def listaPokemonGigamax():
     url = base + '/wiki/Gigantamax'
     page = urllink(url)
     soup = BeautifulSoup(page.content, 'html.parser')
-    tables = soup.find_all("table", class_=re.compile("^roundy"))[:-1]
+    tables = soup.find_all("table", class_=re.compile("^roundy"))[:-3]
     limit = 2
     number = ""
     namePokemon = ""
@@ -233,13 +230,8 @@ def listaPokemonIndexName():
     tables = soup.find_all("table", class_=re.compile("^roundy"))
     with open("IndexPokemon.txt", "w", encoding="utf-8") as f:
         for table in tables:
-            trs = table.find_all('tr')
-            first = True
+            trs = table.find_all('tr')[1:]
             for tr in trs:
-                if first:
-                    first = not first
-                    continue
-
                 tds = tr.find_all('td')
                 number = tds[0].text.replace("#", "")
 
@@ -260,9 +252,9 @@ def getList(rooth):
 
 
 base = 'https://bulbapedia.bulbagarden.net'
-# listaPokemonIndexName()
-# listaPokemon()
-# listaPokemonForms()
-# listaPokemonRegional()
-# listaPokemonMega()
-# listaPokemonGigamax()
+listaPokemonIndexName()
+listaPokemon()
+listaPokemonForms()
+listaPokemonRegional()
+listaPokemonMega()
+listaPokemonGigamax()
